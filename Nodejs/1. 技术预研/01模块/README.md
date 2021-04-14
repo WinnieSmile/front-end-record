@@ -1,15 +1,16 @@
 <!--
  * @Author: your name
  * @Date: 2021-04-12 20:58:09
- * @LastEditTime: 2021-04-15 00:05:59
+ * @LastEditTime: 2021-04-15 01:10:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \1. 技术预研\01模块\README.md
 -->
-一、nodejs全局变量
+## 一、nodejs全局变量  
 Nodejs的全局变量与Chrome会有一些差别，大部分是类似的。
 相似的有：Date（日期对象）、Math（数学对象）、setTimeout、setInterval
 例外：requestAnimationFrame 浏览器渲染下一帧，在node环境中是不存在的，用 setImmediate 来代替的。
+
 Nodejs特有的环境变量：
 `__filename`  当前所在的js，即当前所运行的脚本所在的位置
 `__dirname` 当前脚本所在的目录位置
@@ -26,21 +27,23 @@ console.log(__dirname);
 
 console.log(process);
 ```
-二、CommonJS模块规范
-（原始，以前唯一加载JS的方法）前端加载一个JS的过程：   
+## 二、CommonJS模块规范   
+前端加载一个JS的过程（原始，以前唯一加载JS的方法）：   
 在浏览器里面是用 `<script />`加载js，如果`<script />`标签有一个src属性，浏览器就会从远端下载一个js脚本下来，并且执行它，如果`<script />`标签没有src属性，它就会直接把`<script />`标签里面的代码执行一遍。   
-`<script />`加载JS的问题：      
-* 脚本变多时，需要手动管理加载JS的顺序。
-举例：当你的页面代码使用了jquery的js时，就需要把jquery放在第一个`<script />`去加载，然后再运行业务脚本。如果函数库过多就会有很大的管理成本。
-* 不同脚本之间逻辑调用，需要通过全局变量的方式。
-举例：如jquery，jquery的函数是挂在 $ 这个全局变量上，每次调用jquery，都是访问 $ 变量，去找它里面的函数去调用，也就是说每一个脚本之间的输出都是需要把它的逻辑输出到一个全局变量上，才能够被其他脚本所调用，如果脚本变得非常多，那用全局变量就会越来越多，全局变量多了，程序就会很难管理，因为很难确定哪一天全局变量就会被别人所覆盖。
-* 没有html怎么办？
-解析：当一个 javasctipt运行环境没有html怎么办。    
 
-JavaScript社区发起，在 Node.js 上应用并推广。
+`<script />`标签加载JS的问题：      
+* 脚本变多时，需要手动管理加载JS的顺序。
+解释：当你的页面代码使用了jquery的js时，就需要把jquery放在第一个`<script />`去加载，然后再运行业务脚本。如果函数库过多就会有很大的管理成本。
+* 不同脚本之间逻辑调用，需要通过全局变量的方式。
+解释：如 jquery，jquery 的函数是挂在 `$` 这个全局变量上，每次调用 jquery，都是访问 `$` 变量，去找它里面的函数去调用，也就是说每一个脚本之间的输出都是需要把它的逻辑输出到一个全局变量上，才能够被其他脚本所调用，如果脚本变得非常多，那用全局变量就会越来越多，全局变量多了，程序就会很难管理，因为很难确定哪一天全局变量就会被别人所覆盖。
+* 没有 html 怎么办？
+解释：当一个 javasctipt运行环境没有html怎么办。    
+
+JavaScript 社区发起，在 Node.js 上应用并推广。
 后续也影响到了浏览器端JavaScript。   
 
 模块化写法：`require('./lib.js')`
+
 index.js文件 
 ```javascript
 console.log('start require')
@@ -53,22 +56,23 @@ console.log('hello')
 ```
 执行index.js文件： node index.js   
 打印结果是
+```
 start require     
 hello      
-end require     
+end require 
+```    
 
-
-CommonJS规范的内容：    
-当一个模块的初始状态被别人用了之后，默认是一个空对象
-在index.js中  
+**CommonJS规范的内容：**    
+当一个模块的初始状态被别人用了之后，默认是一个空对象。
+在 index.js 中，使用 `require` 引入  
 ```javascript
 var lib = require('./lib.js')
 console.log('lib', lib)  // {}
 ```    
 
-定义模块输出方式：exports 字面量  
+定义模块输出方式：`exports` 字面量  
 指定被引用的js的输出
-在lib.js文件中
+在 lib.js 文件中
 ```javascript
 exports.hello = 'world'   //在exports里挂载字符串
 
@@ -79,12 +83,12 @@ exports.add = function(a, b){ //在exports里挂载函数
 exports.greek = { hello:'world' } //在exports里挂载对象
 ```    
 
-使用 webpack打包出main.js：   
+使用 webpack 打包出 main.js：   
 `webpack --devtool none --mode development --target node index.js`
 
 
-**使用commonjs改造石头剪刀布游戏**   
-index.js文件
+**使用 commonjs 改造石头剪刀布游戏**   
+index.js 文件
 ```javascript
 var playAction = process.argv[process.argv.length - 1];
 const game = require('./lib');
@@ -102,7 +106,7 @@ process.stdin.on('data', e=>{
     }
 })
 ```
-lib.js文件
+lib.js 文件
 ```javascript
 module.exports = function(playAction){
     var random = Math.random() * 3;
@@ -133,13 +137,13 @@ module.exports = function(playAction){
 }
 ```
 
-三、npm
+## 三、npm 
 * npm 是什么
     * Node.js 的包管理工具
 * 包是什么
     * 别人写的 Node.js 模块   
 
-先创建npm文件夹，在npm文件夹下执行命令
+先创建npm文件夹，在npm文件夹下执行命令：
 `npm init` 生成 package.json文件
 `npm glob` 安装glob这个包   ，作用：当你上传你的代码到git仓库的时候是可以去掉的，下一次下载的时候执行一个 npm install就可以把 `dependencies` 里的包下载下来   
 
@@ -155,7 +159,7 @@ module.exports = function(playAction){
 例如：
 怎么去弄一个私有包、加一个包的可见性、package.json的字段说明、怎样把包发布到npm上面
 
-npm的演变
+**npm的演变**
 * npm上的著名大神
     * TJ Holowaychunk
     * Mafintosh
@@ -163,7 +167,7 @@ npm的演变
     * ……
 * npm event-stream 事件
 
-四、Node.js内置模块
+## 四、Node.js内置模块
 作用：负责node.js应用层面到操作系统层面的通信，node.js调用os的能力（os通知node.js的能力）    
 
 Nodejs是基于Chrome V8引擎的 JavaScript 运行环境，Nodejs使用事件驱动非阻塞式的IO模型，使其轻量又高效。    
@@ -171,7 +175,7 @@ Nodejs是基于Chrome V8引擎的 JavaScript 运行环境，Nodejs使用事件�
 node.js官方文档：https://nodejs.org/dist/latest-v14.x/docs/api/
 node.js的 `os` 模块（与操作系统相关的事情）：https://nodejs.org/dist/latest-v14.x/docs/api/os.html    
 
-**关于node.js的所有模块都在 node.js源码的 `lib`文件夹下边。**
+**关于 node.js 的所有模块都在 node.js 源码的 `lib` 文件夹下边。**
 
 * `EventEmitter` 
     * 观察者模式
