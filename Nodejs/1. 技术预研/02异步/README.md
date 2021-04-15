@@ -201,14 +201,80 @@ setTimeout(()=>{
     })
 }, 800)
 ```
-结果为：1 2      
+结果为：1 2          
+
+实际中是比较复杂的：      
+比如说添加了一个写文件的操作。
+```javascript
+const eventloop = {
+    queue:[],
+    timeoutqueue:[], //定时操作的队列
+    fsqueue:[],  //文件操作队列
+
+    loop(){
+        while(this.queue.length){
+            var callback = this.queue.shift();
+            callback();
+        }
+        // 每个循环里面依次地从队列里面做一个遍历。   
+        /* 比如文件操作队列，就会去看哪一个队列所对应的文件操作是已经完成的，如果完成了它才会去调用，如果没有完成就会跳过。*/
+        this.fsqueue.forEach(callback=>{
+            if(done){
+                callback()
+            }
+        })
+        setTimeout(this.loop.bind(this), 50);
+    },
+    add(callback){
+        this.queue.push(callback);
+    }
+}
+eventloop.loop();
+
+setTimeout(()=>{
+    // 添加一个写文件的操作：fswrite
+    eventloop.add('fswrite' ,function(){
+        console.log(1);
+    })
+}, 500)
+setTimeout(()=>{
+    eventloop.add(function(){
+        console.log(2);
+    })
+}, 800)
+```
+**每一个事件循环都是一个全新的调用栈。**   
+调用栈是一个一个层级往上的，调用栈底部（即eventloop触发的事件），即callback()，在调用这个回调函数之前，前面的代码都是C++代码，从这个函数开始才是 JS，才有 JS的调用栈。
 
 
+## 四、异步编程之Promise   
+Promise   
+* 当前事件循环得不到的结果，但未来的事件循环会给到你结果。   
+* Promise 是一个状态机   
+    * pending
+    * fulfilled/resolved
+    * rejected
 
-
-
-
-
-
+写一个Promise，在chrome浏览器控制台运行
+```javascript
+(function(){
+    var promise = new Promise(function(resolve, reject){
+        setTimeout(()=>{
+            resolve()
+            // reject(new Error());
+        }, 500)
+    })
+    
+    console.log(promise)
+    
+    setTimeout(()=>{
+        console.log(promise);
+    }, 800)
+})()
+```   
+解析：在刚声明promise时，打印promise，它是一个pending状态，800ms之后再打印是个resolved状态。
+   
+`reject(new Error());`    
+当一个promise进入到reject状态，这个错误有没有被正确地捕捉的话，这个错误就会抛到 js 解释环境（node.js或浏览器）的全局，形成一个未捕获的错误。
 
 
