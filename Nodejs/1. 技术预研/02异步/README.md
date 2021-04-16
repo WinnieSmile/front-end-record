@@ -248,14 +248,14 @@ setTimeout(()=>{
 
 
 ## 四、异步编程之Promise   
-Promise   
+**Promise**   
 * 当前事件循环得不到的结果，但未来的事件循环会给到你结果。   
 * Promise 是一个状态机   
     * pending
     * fulfilled/resolved
     * rejected
 
-写一个Promise，在chrome浏览器控制台运行
+写一个Promise，在 chrome 浏览器控制台运行
 ```javascript
 (function(){
     var promise = new Promise(function(resolve, reject){
@@ -272,9 +272,52 @@ Promise
     }, 800)
 })()
 ```   
-解析：在刚声明promise时，打印promise，它是一个pending状态，800ms之后再打印是个resolved状态。
+解析：在刚声明 promise 时，打印 promise，它是一个 pending 状态，800ms 之后再打印是个 resolved 状态。
    
 `reject(new Error());`    
-当一个promise进入到reject状态，这个错误有没有被正确地捕捉的话，这个错误就会抛到 js 解释环境（node.js或浏览器）的全局，形成一个未捕获的错误。
+当一个promise进入到reject状态，这个错误有没有被正确地捕捉的话，这个错误就会抛到 js 解释环境（node.js或浏览器）的全局，形成一个未捕获的错误。    
+
+
+**关于Promise：**    
+* promise是能够从pending状态扭转到 resolve、reject状态的
+* resolve与reject状态之间是不可以转换的。
+* promise是一个状态机、使用promise解决异步问题，是希望它在得到结果的同时马上通知我们。
+    * then：当它成为 promise，进入 resolve 状态，并且能够把我们 resolve 的结果拿到。
+    * catch：进入reject状态，才会被回调
+
+当一个 promise 进入 reject 状态，但是它又被 catch 捕捉到之后，它这个错误就不会捕捉到全局。
+
+**.then 和 .catch 的用法：**   
+* resolved 状态的 Promise 会回调后面的第一个 .then
+* rejected 状态的 Promise 会回调后面的第一个 .catch
+* 任何一个 rejected 状态且后面没有 .catch 的 Promise ，都会造成浏览器 /node 环境的全局错误
+
+**Promise执行异步的功能：**
+* Promise 通过 .then 和 .catch 执行异步获取执行结果的功能
+* Promise 的优秀之处在于它解决了很多异步流程控制问题
+
+
+```javascript
+(function() {
+  var promise = new Promise(function(resolve, reject) {
+    setTimeout(() => {
+      // resolve()
+      reject(new Error('3'))
+    }, 300)
+  })
+    .then(function(res) {
+      console.log('then回调', res)
+    })
+    .catch(function(err) {
+      console.log('catch回调', err)
+    })
+
+  console.log(promise)
+
+  setTimeout(() => {
+    console.log(promise)
+  }, 800)
+})()
+```
 
 
