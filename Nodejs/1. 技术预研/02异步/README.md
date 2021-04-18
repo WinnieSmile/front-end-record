@@ -320,4 +320,276 @@ setTimeout(()=>{
 })()
 ```
 
+如果在面试多人的情况，或者说需要同时获取多个公司面试结果的情况下，如何解决异步流程问题。            
+使用 promise 处理异步：   
+```javascript
+(function(){
+    var promise = interview();
+    promise
+        .then((res)=>{
+            console.log('smile')
+        })
+        .catch((err)=>{
+            console.log('cry')
+        })
+})();
+
+function interview(){
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{      
+            if(Math.random() < 0.8){
+                resolve('success')
+            }else {
+                reject(new Error('fail'));
+            }
+        }, 500)
+    })    
+}
+```
+
+`.then` 会产生一个新的`promise`，这个`promise`的结果是会根据`.then`里面的返回（抛出的错误，也就是这个函数的执行结果），它`return`或者`throw`来决定的。
+主要代码：
+```javascript
+.then((res)=>{
+    throw new Error('refuse');
+    // return 'accept'
+})
+```
+```javascript
+(function(){
+    var promise = interview();
+    var promise2 = promise
+        // .then((res)=>{
+        //     throw new Error('refuse');
+        //     // return 'accept'
+        // })
+        .catch((res)=>{
+            throw new Error('refuse')
+        })
+
+    setTimeout(()=>{
+        console.log(promise);    
+        console.log(promise2);
+    }, 800)
+
+    function interview(){
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{      
+                if(Math.random() >1 ){  //大于>1 表示必然失败，大于0表示必然通过
+                    resolve('success')
+                }else {
+                    reject(new Error('fail'));
+                }
+            }, 500)
+        })    
+    }
+})();
+``` 
+**总结：**   
+* 执行 then 和 catch 会返回一个新 Promise，该 Promise 最终状态根据then和catch的回调函数的执行结果决定。    
+    * 如果回调函数最终是 throw，该 Promise 是 rejected 状态
+    * 如果回调函数最终是 return，该 Promise 是 resolved状态 
+    * 但如果回调函数最终return了一个Promise，该Promise会和回调函数return的Promise状态保持一致
+
+在then和catch里面再返回一个新的Promise， 异步任务。   
+.then和.catch会把回调地狱变成一个比较线性的代码。    
+**三轮面试：**   
+```javascript
+(function(){
+    var promise = interview(1)
+            .then(()=>{
+                return interview(2)
+            })
+            .then(()=>{
+                return interview(3)
+            })
+            .then(()=>{
+                console.log('smile');
+            })
+            .catch((err)=>{
+                console.log('cry at' + err.round + 'round');
+            });
+   
+
+    function interview(round){
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{      
+                if(Math.random() > 0.2 ){
+                    resolve('success')
+                }else {
+                    var error = new Error('fail');
+                    error.round = round;
+                    reject(error);
+                }
+            }, 500)
+        })    
+    }
+    
+})();
+```
+异步流程问题：`并发异步的问题`：同时面试两家公司，在面试完成之后， 同时成功之后， 再去做清除的事情。    
+解决方法：`Promise.all()`     
+```javascript
+(function(){
+
+    Promise
+        .all([
+            interview('greekbang'),
+            interview('tencent')
+        ])
+        .then(()=>{
+            console.log('smile')  //两次面试同时成功
+        })
+        .catch((err)=>{
+            // 某一个公司面试失败，打印出该家公司名称
+            console.log('cry for ' + err.name);
+        })
+
+    function interview(name){
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{      
+                if(Math.random() > 0.2 ){
+                    resolve('success')
+                }else {
+                    var error = new Error('fail');
+                    error.name = name;
+                    reject(error);
+                }
+            }, 500)
+        })    
+    }
+    
+})();
+```
+## 四、异步编程之async/await
+async/await  
+* async function 是 Promise的语法糖封装
+* 异步编程的终极方案 - 以同步的方式写异步   
+    * await 关键字可以“暂停” async function 的执行
+    * await 关键字可以以同步的写法获取 Promise 的执行结果
+    * try-catch 可以获取 await 所得到的错误
+* async/await是一个穿越事件循环存在的 function
+
+async基本写法：
+```javascript
+(function(){
+    const result = async function(){
+        var content = new Promise((resolve, reject) => {
+            setTimeout(()=>{
+                resolve(6);
+            }, 500)
+        })
+    
+        console.log(content);
+        return 4
+    }()
+
+    setTimeout(()=>{
+        console.log(result)
+    }, 800)   
+})()
+```
+await 写法
+```javascript
+(function(){
+    const result = async function(){
+        var content = await new Promise((resolve, reject) => {
+            setTimeout(()=>{
+                resolve(6);
+            }, 500)
+        })
+    
+        console.log(content);
+        return 4
+    }()
+
+    setTimeout(()=>{
+        console.log(result)
+    }, 800)
+     
+})()
+```
+await try-catch 捕捉到await的错误
+```javascript
+(function(){
+    const result = async function(){
+        try {
+            var content = await new Promise((resolve, reject) => {
+                setTimeout(()=>{
+                    reject(new Error('8'));
+                }, 500)
+            }) 
+        } catch (e) {
+            console.log('error', e.message);
+        }
+            
+        console.log(content);
+        return 4
+    }()
+
+    setTimeout(()=>{
+        console.log(result)
+    }, 800)    
+})()
+```
+利用async改造多轮面试代码：
+```javascript
+(async function(){
+    try {
+        await interview(1);
+        await interview(2);
+        await interview(3);
+
+        
+    } catch (e) {
+        return console.log('cry at ' + e.round)
+    }
+    console.log('smile');
+    
+}())
+    
+
+function interview(round){
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{      
+            if(Math.random() > 0.2 ){
+                resolve('success')
+            }else {
+                var error = new Error('fail');
+                error.round = round;
+                reject(error);
+            }
+        }, 500)
+    })    
+}
+```   
+并行异步任务： 在`await` 后面跟 `Promise.all()`    
+作用是把整个异步写法同步化。
+```javascript
+(async function(){
+    try {
+        await Promise.all([interview(1), interview(2)])
+    } catch (e) {
+        return console.log('cry at ' + e.round)
+    }
+    console.log('smile');    
+}())
+    
+
+function interview(round){
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{      
+            if(Math.random() > 0.2 ){
+                resolve('success')
+            }else {
+                var error = new Error('fail');
+                error.round = round;
+                reject(error);
+            }
+        }, 500)
+    })    
+}
+```
+
+
 
