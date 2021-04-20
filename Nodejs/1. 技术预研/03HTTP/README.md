@@ -77,3 +77,8 @@ Express的作用：能够更加方便、简洁地写出HTTP服务，减轻开发
     * request: pathname、query 等
     * response: send()、json()、jsonp() 等
 
+## 用koa优化石头剪刀布游戏  
+koa官网：  https://www.npmjs.com/package/koa    
+中间件：Middleware      
+express最大的缺点：express虽然有中间件，但是它在同步的情况下没有任何非阻塞I/O，或者说异步调用的情况下，符合洋葱模型的，一旦有异步，洋葱模型就打破了，koa的诞生就解决了这个问题，它的中间件通过async function 来编写，意味着 next() 函数可以中断这个中间件的执行，等到所有中间件执行完之后，才继续执行async function
+
