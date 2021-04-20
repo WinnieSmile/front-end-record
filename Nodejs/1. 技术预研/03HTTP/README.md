@@ -74,6 +74,6 @@ Express的作用：能够更加方便、简洁地写出HTTP服务，减轻开发
 核心功能：   
 * 路由
 * request/response 简化
-    * request: pathname、query等
+    * request: pathname、query 等
     * response: send()、json()、jsonp() 等
 
