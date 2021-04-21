@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-04-18 22:40:13
+ * @LastEditTime: 2021-04-21 22:32:29
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \front-end-record\Nodejs\1. 技术预研\03HTTP\README.md
+-->
 ## HTTP服务   
 HTTP是什么？
 * 应用层协议
@@ -79,6 +87,32 @@ Express的作用：能够更加方便、简洁地写出HTTP服务，减轻开发
 
 ## 用koa优化石头剪刀布游戏  
 koa官网：  https://www.npmjs.com/package/koa    
-中间件：Middleware      
-express最大的缺点：express虽然有中间件，但是它在同步的情况下没有任何非阻塞I/O，或者说异步调用的情况下，符合洋葱模型的，一旦有异步，洋葱模型就打破了，koa的诞生就解决了这个问题，它的中间件通过async function 来编写，意味着 next() 函数可以中断这个中间件的执行，等到所有中间件执行完之后，才继续执行async function
+* 中间件：Middleware      
+express最大的缺点：express虽然有中间件，但是它在同步的情况下没有任何非阻塞I/O，或者说异步调用的情况下，符合洋葱模型的，一旦有异步，洋葱模型就打破了，koa的诞生就解决了这个问题，它的中间件通过async function 来编写，意味着 next() 函数可以中断这个中间件的执行，等到所有中间件执行完之后，才继续执行async function    
+
+* 请求和处理 
+* koa和express的区别：      
+koa不会绑定任何的中间件，路由放到中间件里边去，让别人通过中间件实现想要的路由，koa是不会带路由中间件的。   
+
+执行命令：`npm i koa koa-mount`      
+
+Koa的核心功能：   
+* 比 express 更极致的 request/response 简化   
+    * ctx.status = 200
+    * ctx.body = 'hello world'
+* 使用 async function 实现的中间件
+    * 有 “暂停执行” 的能力
+    * 在异步的情况下也符合洋葱模型
+* 精简内核，所有额外功能都移到中间件里实现
+
+
+**Express 与 Koa 的对比**  
+* express 门槛更低；koa更强大优雅。   
+* express 封装更多东西（路由、引擎等）；开发更快速，koa 可定制型更高。 
+* Express适合小型应用，Koa适用于更加大型、更加可维护的程序。适用场景不同。  
+
+    
+
+
+
 
