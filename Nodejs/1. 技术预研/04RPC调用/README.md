@@ -35,4 +35,25 @@ ajax使用HTTP协议进行通信，HTTP是一个文本协议，交互数据的�
 RPC通信是处在服务端与服务端之间的通信，对于效率的追求会更大，所以一般会采用二进制协议来实现服务器之间的通信。
 
 ## Nodejs Buffer编解码二进制数据包
+http://nodejs.org/dist/latest-v12.x/docs/api/buffer.html#buffer_buffer
+
+处理TCP连接的流数据、及文件系统的数据。   
+编译解码二进制包的方法：   
+
+ASCII码对照表：http://ascii.911cha.com/index.php
+
+Buffer模块的创建：   
+`Buffer.from()  Buffer.alloc()`
+```javascript
+const buffer1 = Buffer.from('geekbang');
+const buffer2 = Buffer.from([1, 2, 3, 4]);
+
+const buffer3 = Buffer.alloc(20);
+
+console.log(buffer1);
+console.log(buffer2);
+console.log(buffer3);
+```
+Buffer模块的读写：   
+
 
