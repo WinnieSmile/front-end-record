@@ -55,5 +55,16 @@ console.log(buffer2);
 console.log(buffer3);
 ```
 Buffer模块的读写：   
+```javascript
+buffer2.writeInt8(12, 1); //第二位写入 12的十六进制字符 0C   
+console.log('写入十六进制', buffer2)  // <Buffer 01 0c 03 04>
+
+buffer2.writeInt16BE(512, 2);  //第三位和第四位写入 Int16BE
+console.log('写入Int16BE', buffer2);
+
+buffer3.writeInt16LE(512, 2); 
+```
+二进制协议的编码库：     
+Protocol Buffers：   
 
 
